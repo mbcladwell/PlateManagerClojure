@@ -1,0 +1,95 @@
+(ns pm.core
+  (:use [seesaw core dev mig])
+  (:use [pm.models.db])
+  (:use [clojure.string])
+  (:gen-class))
+
+
+;;(refer 'pm.methods)
+ ;; (:require [pm.methods])
+ ;; (:import [javax.swing JFileChooser JEditorPane JFrame JScrollPane BorderFactory]
+ ;;           java.awt.Font )
+
+;;https://github.com/daveray/seesaw/blob/develop/src/seesaw/core.clj#L3512
+
+(defn create-project-dialog []
+  (->
+   (frame :title "Create Project", :on-close :hide :id :f1 :content       
+       (mig-panel
+        :constraints ["wrap 2"
+                      "[shrink 0]20px[200, grow, fill]"
+                      "[shrink 0]5px[]"]
+        :items [ [(label :text "Name:")             ]
+                [ (text :text "" :id :tb1 )      ]
+                [ (label :text "Owner:")             ]
+                [ (text :text ""  :id :tb2)       ]
+                [(button :text "Cancel"
+                         :listen [:action
+                                  (fn [e] (hide! (to-root e))) ])]
+                [(button :text "OK"
+                         :listen [:action
+                                  (fn [e] (pm.models.db/create-project
+                                   (value (select (to-root e) [:#tb1]))
+                                   (value (select (to-root e) [:#tb2]))))])]
+                ])) pack! show! (move! :by [ 300, 300])))
+                              
+(create-project-dialog  )
+
+
+
+
+(def main-panel 
+  (mig-panel
+      :constraints ["fill, ins 0"]
+      :items [[(seesaw.core/table
+                      :id :tbl1
+                      :size [640 :by 480]
+                      :model [:columns [:id :name :owner :date]
+                              :rows (pm.models.db/list-projects)                                                  ]) "grow"]              
+              [(button :text "Open"
+                       :id  :b1) "dock south"]
+              [(button :text "Cancel"
+                       :id :b2) "dock south"]]))
+
+(defn -main [& args]
+  (invoke-later
+    (-> (frame :title "Plate Manager"
+               :content main-panel          
+               :on-close :hide)
+        ;;         :menubar prjmenu)
+        pack!
+        show! (move! :by [ 300, 300]))))
+
+(-main)
+
+
+(defn prj-exit  [e] (System/exit 0))
+(defn prj-help  [e] ())
+;;(defn prj-new [e] (create-project ))
+
+
+
+
+(defn get-all-projs[]
+  
+  )
+
+(def prjmenu
+     (let [ prj-exit (action :handler prj-exit :name "Exit" :tip "Exit Plate Manager.")
+            prj-new (action :handler create-project :name "New" :tip "Create a new project.")
+            prj-help (action :handler prj-help :name "Help" :tip "Launch help app.")
+           ]
+       (menubar
+        :items [(menu :text "Project" :items [ prj-new prj-exit])
+                (menu :text "Help" :items [prj-help])])))
+
+
+
+
+
+;;http://www.eli.sdsu.edu/courses/fall14/cs596/notes/D18SeesawGUI.pdf
+
+
+
+
+(def name-field (seesaw/text :text ""))  

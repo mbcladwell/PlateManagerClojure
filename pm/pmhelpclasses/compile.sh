@@ -1,0 +1,1 @@
+javac -cp /home/mbc/syncd/prog/plate-manager/jws/pm/pmhelpclasses:/home/mbc/syncd/prog/plate-manager/jws/pm/pmhelpset:/home/mbc/syncd/prog/plate-manager/jws/pm/resources/javahelp-2.0.05.jar OpenHelpDialog.java
